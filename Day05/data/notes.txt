@@ -1,0 +1,6 @@
+python is one of the most powerful ai language tool which is used for various task and it is easy to learn.
+
+python is widely applicable in field like Artificial Intelligence, Machine Learning and Data Science.
+
+Python supports object-oriented programming language
+and has thousand of libraries.

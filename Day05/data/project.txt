@@ -1,0 +1,20 @@
+Project Name: Smart Dustbin System
+
+Project Duration:
+January 2026 to May 2026
+
+Programming Language:
+Python
+
+Database:
+SQLite
+
+Team Members:
+Sahil
+Shanesh
+Shubham
+Chetan
+Sarvesh
+
+The objective of the project was to automate
+dustbin management using Artificial Intelligence.
