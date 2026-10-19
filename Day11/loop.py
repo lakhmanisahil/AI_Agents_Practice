@@ -10,7 +10,9 @@ from state import (
     can_continue,
     finish
 )
-from memory import save_memory
+from memory import save_memory,save_semantic_memory
+
+from memory_extractor import extract_memory
 
 
 from task_planner import (
@@ -180,9 +182,13 @@ async def run_agent_loop(
             answer
             )
 
-            
-            
+            fact = extract_memory(
+            user_request,
+            answer
+            )
 
+            if fact != "NONE":
+                save_semantic_memory(fact)
 
             break
 
