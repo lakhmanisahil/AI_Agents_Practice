@@ -1,5 +1,6 @@
 from openai import OpenAI
 from dotenv import load_dotenv
+import json
 import os
 
 
@@ -20,7 +21,7 @@ def review(
     prompt = f"""
 You are a Reviewer Agent.
 
-Review the following solution.
+Review the following Python solution.
 
 Task:
 {task}
@@ -36,7 +37,27 @@ Check:
 4. Missing issues
 5. Possible improvements
 
-Return a concise review.
+Return ONLY valid JSON.
+
+Use exactly this format:
+
+{{
+    "status": "approved",
+    "feedback": "The solution is correct."
+}}
+
+OR:
+
+{{
+    "status": "needs_revision",
+    "feedback": "Explain what needs to be changed."
+}}
+
+Use "approved" only when the solution
+is acceptable.
+
+Use "needs_revision" when the solution
+requires a correction.
 """
 
     response = client.chat.completions.create(
@@ -49,4 +70,13 @@ Return a concise review.
         ]
     )
 
-    return response.choices[0].message.content
+    result = (
+        response
+        .choices[0]
+        .message
+        .content
+        .strip()
+    )
+
+    return json.loads(result)
+

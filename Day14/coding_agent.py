@@ -14,20 +14,27 @@ client = OpenAI(
 
 def write_code(
     task,
-    research
+    research,
+    feedback=""
 ):
 
     prompt = f"""
 You are a Coding Agent.
 
-Write Python code based on the task
-and research.
+Write or revise Python code based on
+the task and research.
 
 Task:
 {task}
 
 Research:
 {research}
+
+Previous Reviewer Feedback:
+{feedback}
+
+If reviewer feedback is provided,
+correct the identified problems.
 
 Return:
 
@@ -46,3 +53,4 @@ Return:
     )
 
     return response.choices[0].message.content
+
