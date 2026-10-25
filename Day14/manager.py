@@ -17,6 +17,9 @@ client = OpenAI(
 )
 
 
+MAX_REVISIONS = 3
+
+
 def choose_worker(state):
 
     prompt = f"""
@@ -40,6 +43,12 @@ Review:
 History:
 {state["history"]}
 
+Revision Count:
+{state["revision_count"]}
+
+Maximum Revisions:
+{MAX_REVISIONS}
+
 Available workers:
 
 research
@@ -49,23 +58,23 @@ finish
 
 Decision rules:
 
-- If research is empty, choose research.
+- If Research is empty, choose research.
 
-- If research exists and code is empty,
-  choose coding.
+- If Research exists and Code is empty, choose coding.
 
-- If a review exists with status
-  "needs_revision", choose coding.
+- If a Review exists with status
+  "needs_revision" and the Revision count is below the maximum, choose coding.
 
-- If code exists and there is no review,
-  choose review.
+- If Code exists and there is no Review, choose review.
 
 - If the previous review requested
-  revision and new code has been generated,
-  choose review again.
+  revision and new code has been generated,  choose review again.
 
-- If the latest review status is
+- If the latest Review status is
   "approved", choose finish.
+
+- If the maximum revision count has
+  been reached, choose finish.
 
 Return ONLY one word:
 
@@ -74,6 +83,7 @@ coding
 review
 finish
 """
+
     response = client.chat.completions.create(
         model=os.getenv("MODEL"),
         messages=[
@@ -122,25 +132,41 @@ def run_manager(task):
 
         elif worker == "coding":
 
+            if (
+            state["review"]
+            and state["revision_count"]
+            >= MAX_REVISIONS
+            ):
+
+                print(
+                "Maximum revisions reached."
+                )
+
+                break
+
             feedback = ""
 
             if state["review"]:
 
                 feedback = state[
-                    "review"
+                "review"
                 ].get(
-                    "feedback",
-                    ""
+                "feedback",
+                ""
                 )
 
+            state["revision_count"] += 1
+
             state["code"] = write_code(
-                state["task"],
-                state["research"],
-                feedback
+            state["task"],
+            state["research"],
+            feedback
             )
 
+            state["review"] = ""
+
             state["history"].append(
-                "coding"
+            "coding"
             )
 
         elif worker == "review":
@@ -165,4 +191,3 @@ def run_manager(task):
             )
 
     return state
-
